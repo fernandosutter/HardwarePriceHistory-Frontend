@@ -5,7 +5,6 @@
         <b-field label="Produto" expanded>
           <b-autocomplete
             id="campoProduto"
-            v-model="produtoSelecionado"
             field="productName"
             :data="produtoParaBusca"
             icon="magnify"
@@ -14,13 +13,13 @@
             @select="option => selecionarProduto(option)"
             @typing="buscarProdutosAsync">
           <template #empty>Nenhum produto foi encontrado</template>
-        </b-autocomplete>
+          </b-autocomplete>
         </b-field>
-        <b-field label="Datas">
-        <b-datepicker placeholder="Clique para selecionar" v-model="datas" range>
-        </b-datepicker>
+        <b-field label="Datas" grouped>
+          <b-datepicker placeholder="Clique para selecionar" v-model="datas" range></b-datepicker>
+          <b-button @click="gerarGrafico" type="is-success" outlined>Gerar Gráfico</b-button>
+        </b-field>
       </b-field>
-    </b-field>
     </div>
   </div>
 </template>
@@ -30,26 +29,33 @@ export default {
   name: 'ProductPrices',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App',
       datas: [],
-      produtoSelecionado: '',
       produtoIDSelecionado: 0,
-      produtoParaBusca: []
+      produtoParaBusca: [],
+      isLoading: false
     }
   },
   methods: {
     selecionarProduto (option) {
-      this.produtoSelecionado = option.productName
       this.produtoIDSelecionado = option.id
     },
-    buscarProdutosAsync () {
+    buscarProdutosAsync (produto) {
+      let produtoParaBuscar = produto.trim()
+      if (produtoParaBuscar === '') {
+        return
+      }
       this.produtoParaBusca = []
-      this.axios.get('https://localhost:7022/api/Product?name=' + this.produtoSelecionado)
+      this.axios.get('https://localhost:7022/api/Product?name=' + produtoParaBuscar)
         .then(response => {
           response.data.forEach(element => {
             this.produtoParaBusca.push(element)
           })
         })
+    },
+    gerarGrafico () {
+      // Requisição com os dados dos preços
+
+      // Abrir o gráfico em tela
     }
   }
 }
