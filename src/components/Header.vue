@@ -26,6 +26,7 @@ export default {
   left: 0;
   /* Definir a largura máxima do cabeçalho */
   width: 100%;
+  z-index: 1;
 }
 
 .header-text {

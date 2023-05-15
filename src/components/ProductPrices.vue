@@ -21,18 +21,42 @@
         </b-field>
       </b-field>
     </div>
+    <div class="chart">
+      <GChart
+        type="LineChart"
+        :data="dadosGrafico"
+        :options="chartOptions"
+        :resizeDebounce="500"
+      />
+    </div>
   </div>
 </template>
 
 <script>
+import { GChart } from 'vue-google-charts/legacy'
+
 export default {
+  components: { GChart },
   name: 'ProductPrices',
   data () {
     return {
       datas: [],
       produtoIDSelecionado: 0,
       produtoParaBusca: [],
-      isLoading: false
+      isLoading: false,
+      colunasGrafico: ['Data', 'Preço'],
+      dadosGrafico: [this.colunasGrafico],
+      chartOptions: {
+        title: 'Preço do produto',
+        legend: { position: 'bottom' },
+        hAxis: {
+          title: 'Data'
+        },
+        vAxis: {
+          title: 'Preço'
+        },
+        height: 600
+      }
     }
   },
   methods: {
@@ -53,9 +77,14 @@ export default {
         })
     },
     gerarGrafico () {
-      // Requisição com os dados dos preços
-
-      // Abrir o gráfico em tela
+      this.dadosGrafico = []
+      this.dadosGrafico.push(this.colunasGrafico)
+      this.axios.get('https://localhost:7022/api/ProductPrice?productId=' + this.produtoIDSelecionado + '&startDate=' + this.datas[0] + '&endDate=' + this.datas[1])
+        .then(response => {
+          response.data.forEach(element => {
+            this.dadosGrafico.push([element.date, element.price])
+          })
+        })
     }
   }
 }
@@ -77,5 +106,9 @@ label {
 
 .campoData {
   padding-top: 24px;
+}
+
+.chart{
+  margin-bottom: 104px;
 }
 </style>
